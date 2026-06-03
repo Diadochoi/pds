@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데일리 브리핑 | 2026-06-03</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-title::before {
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: #667eea;
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .priority-item {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .priority-item strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .schedule-item {
+            display: flex;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .time {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 13px;
+            min-width: 80px;
+            margin-right: 15px;
+            white-space: nowrap;
+        }
+
+        .schedule-detail {
+            flex: 1;
+        }
+
+        .schedule-detail h4 {
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .schedule-detail p {
+            font-size: 12px;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .action-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .action-table th {
+            background: #f0f0f0;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .action-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .priority-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            font-size: 11px;
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .kpi-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .kpi-card h4 {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+
+        .weekly-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .weekly-item:last-child {
+            border-bottom: none;
+        }
+
+        .day-badge {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-right: 8px;
+            min-width: 50px;
+            text-align: center;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 데일리 브리핑</h1>
+            <p>2026년 6월 3일 (수요일) | MegazoneCloud 마케팅 유닛</p>
+        </div>
+
+        <div class="content">
+            <!-- TOP PRIORITY -->
+            <div class="section">
+                <div class="section-title">오늘의 핵심 우선순위</div>
+                <div class="priority-item">
+                    <strong>🎯 3개 1:1 미팅 집중 (14:00-17:00 연속)</strong>
+                    <p style="margin-top: 8px;">찬유님, 난아님과의 월간 1:1 미팅 및 F&E 1팀 주간 미팅이 집중되어 있습니다. 각 미팅별 핵심 议제를 사전에 정리하고, 이번주 주요 마케팅 이슈(Microsoft 정기미팅, Games on AWS 현장답사)를 공유할 기회입니다.</p>
+                </div>
+            </div>
+
+            <!-- TODAY'S SCHEDULE -->
+            <div class="section">
+                <div class="section-title">오늘의 일정</div>
+
+                <div class="schedule-item">
+                    <span class="time">14:00</span>
+                    <div class="schedule-detail">
+                        <h4>월간 1:1 미팅 /w 찬유님</h4>
+                        <p>📍 메가존과천-4F-A-C003 (온라인: Google Meet)</p>
+                        <p>⏱ 14:00-14:30 (30분)</p>
+                        <p>📌 월간 단위 주요 의사결정사항, 팀 성과 리뷰</p>
+                    </div>
+                </div>
+
+                <div class="schedule-item">
+                    <span class="time">14:00</span>
+                    <div class="schedule-detail">
+                        <h4>월간 1:1 미팅 /w 난아님</h4>
+                        <p>📍 메가존과천-4F-C-C005 (온라인: Google Meet)</p>
+                        <p>⏱ 14:00-14:30 (30분)</p>
+                        <p>📌 Field & Event 2 유닛 월간 협력 사항</p>
+                    </div>
+                </div>
+
+                <div class="schedule-item">
+                    <span class="time">16:00</span>
+                    <div class="schedule-detail">
+                        <h4>[F&E 1] 주간 미팅</h4>
+                        <p>📍 온라인 Google Meet (kfj-kuaf-zkf)</p>
+                        <p>⏱ 16:00-17:00 (60분)</p>
+                        <p>👥 참석자: 진영희(발표자), 유주, 송경윤 외 마케팅팀</p>
+                        <p>📌 Weekly execution 리뷰 및 blocker 논의</p>
+                    </div>
+                </div>
+
+                <div class="schedule-item">
+                    <span class="time">17:00</span>
+                    <div class="schedule-detail">
+                        <h4>[개인 블록] 업무 정리 타임</h4>
+                        <p>⏱ 17:00-18:00 (60분)</p>
+                        <p>📌 미팅 후 action items 정리 및 이슈 문서화</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- THIS WEEK -->
+            <div class="section">
+                <div class="section-title">이번 주 주요 일정</div>
+
+                <div style="margin-bottom: 15px;">
+                    <div class="weekly-item">
+                        <span class="day-badge">목요일</span>
+                        <strong>6/4 (10:00-12:00)</strong> — FY26 정기미팅 (Microsoft)
+                        <p style="margin-top: 5px; margin-left: 0; color: #666; font-size: 12px;">
+                        📍 Microsoft Teams / 참석자: Microsoft, MZC 리더십 (40+명)<br/>
+                        📌 Enterprise, SME&C, SMB 업데이트 및 Azure/Microsoft 전략 협의
+                        </p>
+                    </div>
+
+                    <div class="weekly-item">
+                        <span class="day-badge">목요일</span>
+                        <strong>6/4 (11:30-13:00)</strong> — 마케팅 팀 점심식사 (축하 초대)
+                        <p style="margin-top: 5px; margin-left: 0; color: #666; font-size: 12px;">
+                        📍 보리촌곤드레 / 장소: 예약완료 (28명)<br/>
+                        📌 Field 2 유닛 김수경님 결혼 축하 식사 (6/20 결혼식)
+                        </p>
+                    </div>
+
+                    <div class="weekly-item">
+                        <span class="day-badge">목요일</span>
+                        <strong>6/4 (15:30-16:30)</strong> — Games on AWS 2026 현장답사
+                        <p style="margin-top: 5px; margin-left: 0; color: #666; font-size: 12px;">
+                        📍 더블트리 바이 힐튼 서울 판교<br/>
+                        📌 행사장 레이아웃 검토, 제작물 설치 구역 확인
+                        </p>
+                    </div>
+
+                    <div class="weekly-item">
+                        <span class="day-badge">금요일</span>
+                        <strong>6/5 (10:00-11:00)</strong> — [MKT] Field & Event 2 유닛 주간 미팅
+                        <p style="margin-top: 5px; margin-left: 0; color: #666; font-size: 12px;">
+                        📍 메가존과천-4F-C-C005 / Google Meet<br/>
+                        📌 필드 마케팅 및 이벤트 실행 리뷰
+                        </p>
+                    </div>
+
+                    <div class="weekly-item">
+                        <span class="day-badge">금요일</span>
+                        <strong>6/5 (10:30-11:30)</strong> — 1:1 with 승백
+                        <p style="margin-top: 5px; margin-left: 0; color: #666; font-size: 12px;">
+                        📍 온라인 Google Meet<br/>
+                        📌 마케팅 리더 협력 사항
+                        </p>
+                    </div>
+
+                    <div class="weekly-item">
+                        <span class="day-badge">금요일</span>
+                        <strong>6/5 (15:00-16:00)</strong> — Weekly Execution & Blocker Review
+                        <p style="margin-top: 5px; margin-left: 0; color: #666; font-size: 12px;">
+                        📍 메가존과천-4F-C-C003 / Google Meet<br/>
+                        📌 주간 마케팅 실행 상황 및 blockers 정리
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION ITEMS -->
+            <div class="section">
+                <div class="section-title">오늘의 액션 아이템</div>
+
+                <table class="action-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">우선순위</th>
+                            <th>항목</th>
+                            <th style="width: 100px;">마감</th>
+                            <th style="width: 120px;">상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="priority-badge priority-high">🔴 높음</span></td>
+                            <td>14:00 1:1 미팅 議題 사전 준비 (찬유, 난아)</td>
+                            <td>오늘 14:00</td>
+                            <td><span class="status-badge">대기중</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-high">🔴 높음</span></td>
+                            <td>Microsoft 정기미팅 (6/4 10:00) 사전 자료 검토</td>
+                            <td>내일 10:00</td>
+                            <td><span class="status-badge">대기중</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-medium">🟡 중간</span></td>
+                            <td>Games on AWS 2026 현장답사 최종 체크리스트 확인</td>
+                            <td>내일 15:30</td>
+                            <td><span class="status-badge">대기중</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-medium">🟡 중간</span></td>
+                            <td>F&E 1 팀 주간 리뷰 문서 작성</td>
+                            <td>오늘 16:00</td>
+                            <td><span class="status-badge">진행중</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-low">🟢 낮음</span></td>
+                            <td>이번주 인터뷰 일정 최종 확인 (금요일 2건)</td>
+                            <td>금요일</td>
+                            <td><span class="status-badge">대기중</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- KEY METRICS -->
+            <div class="section">
+                <div class="section-title">이번주 주요 포커스</div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <h4>🤝 클라우드 생태계 협력</h4>
+                        <p style="font-size: 13px; color: #666; margin-top: 8px;">
+                        Microsoft 정기미팅을 통한 FY26 전략 협의 및 파트너십 강화. 기대 성과: Enterprise/SME 고객 공동 마케팅 기회 발굴
+                        </p>
+                    </div>
+
+                    <div class="kpi-card">
+                        <h4>🎮 주요 행사 준비</h4>
+                        <p style="font-size: 13px; color: #666; margin-top: 8px;">
+                        Games on AWS 2026 현장 재검토로 완성도 높은 이벤트 실행 확보. 대 고객사 브랜딩 기회
+                        </p>
+                    </div>
+
+                    <div class="kpi-card">
+                        <h4>👥 팀 역량 강화</h4>
+                        <p style="font-size: 13px; color: #666; margin-top: 8px;">
+                        금요일 인터뷰를 통해 마케팅 팀 확대. 필드 마케팅 역량 강화 진행 중
+                        </p>
+                    </div>
+
+                    <div class="kpi-card">
+                        <h4>📊 주간 리뷰</h4>
+                        <p style="font-size: 13px; color: #666; margin-top: 8px;">
+                        Weekly Execution & Blocker 회의 (금요일 3pm)를 통한 마케팅 진행 상황 정리 및 주간 성과 정산
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTES -->
+            <div class="section">
+                <div class="section-title">주요 알림</div>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px;">
+                        ✅ <strong>오늘 시간이 겹친 1:1 미팅</strong> — 찬유님, 난아님 모두 14:00 예정. 각각 30분이므로 순차 진행 가능하거나 시간 조정 권장
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px;">
+                        ✅ <strong>Microsoft 정기미팅 (6/4, 10:00-12:00)</strong> — 40명 이상 참석, Teams 회의. 사전 자료 준비 필요
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px;">
+                        ✅ <strong>Games on AWS 현장답사 (6/4, 15:30)</strong> — 더블트리 판교 호텔. 행사장 최종 체크, 이동 시간 고려
+                    </li>
+                    <li style="padding: 10px 0; font-size: 13px;">
+                        ✅ <strong>마케팅 팀 점심 축하 (6/4, 11:30)</strong> — 보리촌곤드레, 28명 예약 완료. 김수경님 결혼 축하 행사
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📧 자동 생성 브리핑 | 생성 시간: 2026-06-03 12:00 KST | 다음 업데이트: 2026-06-04 08:30</p>
+        </div>
+    </div>
+</body>
+</html>
