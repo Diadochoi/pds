@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 1200px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    font-family: 'Pretendard', -apple-system, 'Malgun Gothic', sans-serif;
+    color: #ffffff;
+    padding: 56px 64px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-size: 22px;
+    color: #9ca3d4;
+    letter-spacing: 3px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .title {
+    font-size: 40px;
+    font-weight: 800;
+  }
+  .title .num {
+    color: #818cf8;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 36px;
+  }
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px 30px;
+  }
+  .card .badge {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #818cf8;
+    background: rgba(99,102,241,0.15);
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-bottom: 16px;
+  }
+  .card .name {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .card .desc {
+    font-size: 21px;
+    line-height: 1.6;
+    color: #d1d3ee;
+  }
+  .footer-note {
+    margin-top: 36px;
+    text-align: center;
+    font-size: 22px;
+    color: #9ca3d4;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 28px;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="eyebrow">Korea MSP Market Landscape</div>
+    <div class="title">국내 클라우드 MSP 시장, <span class="num">'3강+α'</span> 경쟁 구도</div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="badge">독립 MSP · 3강</div>
+      <div class="name">메가존클라우드 · 베스핀글로벌 · 메타넷엑스</div>
+      <div class="desc">국내 MSP 시장을 이끄는 독립 사업자, 나란히 IPO 추진 중</div>
+    </div>
+    <div class="card">
+      <div class="badge">대형 SI · 통신</div>
+      <div class="name">삼성SDS · LG CNS · SK C&C · KT</div>
+      <div class="desc">계열사 기반 클라우드 사업 확대, 거센 추격</div>
+    </div>
+    <div class="card">
+      <div class="badge">멀티클라우드 전문</div>
+      <div class="name">GS네오텍 · 클루커스</div>
+      <div class="desc">AWS·GCP 등 멀티클라우드 관리 역량으로 선두권 진입</div>
+    </div>
+    <div class="card">
+      <div class="badge">이종 산업 진입</div>
+      <div class="name">안랩 · 윈스 · 신세계아이앤씨 · NHN클라우드</div>
+      <div class="desc">보안·유통·SI 등 다양한 산업에서 MSP 시장 진출</div>
+    </div>
+  </div>
+  <div class="footer-note">국내 MSP 시장 규모 2023년 약 7조원 → 2026년 약 12조원 전망 (가트너)</div>
+</body>
+</html>

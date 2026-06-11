@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 1200px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    font-family: 'Pretendard', -apple-system, 'Malgun Gothic', sans-serif;
+    color: #ffffff;
+    padding: 56px 64px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .eyebrow {
+    font-size: 22px;
+    color: #9ca3d4;
+    letter-spacing: 3px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .title {
+    font-size: 38px;
+    font-weight: 800;
+  }
+  .compare-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr 1fr;
+  }
+  .row.header .cell {
+    background: #6366f1;
+    font-weight: 800;
+    font-size: 26px;
+    padding: 24px 22px;
+  }
+  .row:not(.header) {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .row:last-child {
+    border-bottom: none;
+  }
+  .row:not(.header):nth-child(even) {
+    background: rgba(255,255,255,0.03);
+  }
+  .cell {
+    padding: 26px 22px;
+    font-size: 24px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+  }
+  .cell.label {
+    font-weight: 700;
+    color: #9ca3d4;
+  }
+  .cell .num {
+    font-weight: 800;
+    color: #a5b4fc;
+  }
+  .footer-note {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 20px;
+    color: #9ca3d4;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="eyebrow">Revenue Comparison</div>
+    <div class="title">메가존클라우드 vs 베스핀글로벌 vs 메타넷엑스</div>
+  </div>
+  <div class="compare-wrap">
+    <div class="row header">
+      <div class="cell">구분</div>
+      <div class="cell">메가존클라우드</div>
+      <div class="cell">베스핀글로벌</div>
+      <div class="cell">메타넷엑스</div>
+    </div>
+    <div class="row">
+      <div class="cell label">매출 (최신)</div>
+      <div class="cell"><span class="num">1조7496억원</span><br>(2025년)</div>
+      <div class="cell"><span class="num">전년比 14%↑</span><br>(2024년)</div>
+      <div class="cell"><span class="num">5,388억원</span><br>(2024년)</div>
+    </div>
+    <div class="row">
+      <div class="cell label">성장률</div>
+      <div class="cell">전년比 27.9%↑<br>첫 흑자 전환</div>
+      <div class="cell">영업이익<br>흑자 전환</div>
+      <div class="cell">전년比 31.4%↑<br>영업이익 400.9%↑</div>
+    </div>
+    <div class="row">
+      <div class="cell label">핵심 강점</div>
+      <div class="cell">멀티CSP 그룹 구조<br>(AWS·Azure·GCP)</div>
+      <div class="cell">자체 CMP<br>'옵스나우(OpsNow)'</div>
+      <div class="cell">온프레미스·프라이빗<br>클라우드 20년 경험</div>
+    </div>
+    <div class="row">
+      <div class="cell label">IPO 현황</div>
+      <div class="cell">2026년 상장 목표<br>기업가치 약 6조원</div>
+      <div class="cell">IPO 추진 중<br>2025년 대표 교체</div>
+      <div class="cell">IPO 예비심사 청구<br>(상장 절차 본격화)</div>
+    </div>
+  </div>
+  <div class="footer-note">※ 매출 기준 시점·집계 범위가 기업별로 달라 단순 비교 시 유의가 필요합니다.</div>
+</body>
+</html>

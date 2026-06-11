@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 1200px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    font-family: 'Pretendard', -apple-system, 'Malgun Gothic', sans-serif;
+    color: #ffffff;
+    padding: 56px 64px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .eyebrow {
+    font-size: 22px;
+    color: #9ca3d4;
+    letter-spacing: 3px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .title {
+    font-size: 38px;
+    font-weight: 800;
+  }
+  .compare-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 0.7fr 2fr;
+  }
+  .row.header .cell {
+    background: #6366f1;
+    font-weight: 800;
+    font-size: 26px;
+    padding: 22px 28px;
+  }
+  .row:not(.header) {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .row:last-child {
+    border-bottom: none;
+  }
+  .row:not(.header):nth-child(even) {
+    background: rgba(255,255,255,0.03);
+  }
+  .cell {
+    padding: 26px 28px;
+    font-size: 24px;
+    line-height: 1.65;
+    display: flex;
+    align-items: center;
+  }
+  .cell.label {
+    font-weight: 800;
+    font-size: 27px;
+    color: #a5b4fc;
+  }
+  .footer-note {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 20px;
+    color: #9ca3d4;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="eyebrow">Big Tech & Telecom Cloud Business</div>
+    <div class="title">대기업 계열사 클라우드 사업 현황</div>
+  </div>
+  <div class="compare-wrap">
+    <div class="row header">
+      <div class="cell">기업</div>
+      <div class="cell">현황</div>
+    </div>
+    <div class="row">
+      <div class="cell label">삼성SDS</div>
+      <div class="cell">2023년 IDC 기준 점유율 23.9%로 1위 보도, 2024년 3분기 클라우드 매출 전년比 35.3%↑, Azure 제치고 국내 2위 사업자 분석</div>
+    </div>
+    <div class="row">
+      <div class="cell label">LG CNS</div>
+      <div class="cell">AWS·Azure 등 글로벌 CSP 협력, 연 1조원 이상 클라우드 매출 달성, IPO 준비 중</div>
+    </div>
+    <div class="row">
+      <div class="cell label">SK C&C / SKT</div>
+      <div class="cell">SKT, 2027년까지 국내 톱3 MSP 진입 목표, SK C&C도 클라우드를 미래 사업으로 MSP 진출</div>
+    </div>
+    <div class="row">
+      <div class="cell label">KT</div>
+      <div class="cell">Azure 협력 기반 MSP 강화, 메가존클라우드와 '혈맹' 관계였으나 자체 클라우드 사업 모색 중</div>
+    </div>
+  </div>
+  <div class="footer-note">※ 시장 점유율·순위는 조사 기관과 산정 기준에 따라 자료마다 다르게 집계됩니다.</div>
+</body>
+</html>
