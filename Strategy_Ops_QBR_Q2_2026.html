@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategy & Ops QBR | Q2 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --mzc-orange: #FF6B35;
+    --mzc-navy: #1A1A2E;
+    --mzc-mid: #0F3460;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --gray-bg: #f8fafc;
+    --border: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--gray-bg); color: var(--text-main); }
+
+  .header {
+    background: linear-gradient(135deg, var(--mzc-navy) 0%, var(--mzc-mid) 100%);
+    color: white; padding: 24px 36px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .header-left h1 { font-size: 22px; font-weight: 700; }
+  .header-left p { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+  .live-badge {
+    background: #22c55e; color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px;
+  }
+  .header-right { text-align: right; }
+  .header-right .period { font-size: 28px; font-weight: 800; color: var(--mzc-orange); }
+  .header-right .deadline { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+
+  .tab-nav {
+    background: white; border-bottom: 2px solid var(--border);
+    display: flex; padding: 0 36px; gap: 4px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tab-btn {
+    padding: 14px 20px; cursor: pointer; font-size: 13px; font-weight: 600;
+    border: none; background: none; color: var(--text-muted);
+    border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--mzc-orange); border-bottom-color: var(--mzc-orange); }
+  .tab-btn:hover:not(.active) { color: var(--text-main); }
+
+  .main { padding: 28px 36px; max-width: 1400px; margin: 0 auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .section-title {
+    font-size: 16px; font-weight: 700; color: var(--mzc-navy);
+    margin-bottom: 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--mzc-orange);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .badge {
+    font-size: 11px; background: var(--mzc-orange); color: white;
+    padding: 2px 8px; border-radius: 10px; font-weight: 600;
+  }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.yellow::before { background: var(--yellow); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.blue::before { background: var(--blue); }
+  .kpi-card.gray::before { background: #94a3b8; }
+  .kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi-value { font-size: 32px; font-weight: 800; margin: 6px 0 4px; line-height: 1; }
+  .kpi-card.green .kpi-value { color: var(--green); }
+  .kpi-card.yellow .kpi-value { color: var(--yellow); }
+  .kpi-card.red .kpi-value { color: var(--red); }
+  .kpi-card.blue .kpi-value { color: var(--blue); }
+  .kpi-card.gray .kpi-value { color: #94a3b8; font-size: 18px; margin-top: 8px; }
+  .kpi-target { font-size: 12px; color: var(--text-muted); }
+  .kpi-target span { font-weight: 600; }
+  .kpi-status { position: absolute; top: 16px; right: 16px; font-size: 18px; }
+  .kpi-trend { font-size: 11px; margin-top: 6px; }
+  .kpi-trend.up { color: var(--green); }
+  .kpi-trend.down { color: var(--red); }
+  .kpi-trend.warn { color: var(--yellow); }
+
+  .chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .chart-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07); border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .chart-title { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+  .chart-subtitle { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
+  canvas { max-height: 260px; }
+
+  .funnel-row {
+    display: grid; grid-template-columns: 140px 1fr 90px 200px 50px;
+    align-items: center; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .funnel-row:last-child { border-bottom: none; }
+  .funnel-label { font-size: 12px; font-weight: 600; }
+  .funnel-bar-bg { background: #f1f5f9; border-radius: 4px; height: 22px; overflow: hidden; }
+  .funnel-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 700; color: white; }
+  .funnel-count { font-size: 14px; font-weight: 800; text-align: right; }
+  .funnel-conv { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+  .funnel-icon { text-align: center; font-size: 16px; }
+
+  .status-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .status-table th { background: var(--mzc-navy); color: white; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .status-table tr:hover td { background: #f8fafc; }
+  .status-table tr:last-child td { border-bottom: none; }
+
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .pill.green { background: #dcfce7; color: #15803d; }
+  .pill.yellow { background: #fef9c3; color: #a16207; }
+  .pill.red { background: #fee2e2; color: #b91c1c; }
+  .pill.gray { background: #f1f5f9; color: #475569; }
+  .pill.blue { background: #dbeafe; color: #1d4ed8; }
+
+  .progress-wrap { display: flex; align-items: center; gap: 8px; margin: 8px 0 12px; }
+  .progress-bar { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; }
+  .progress-label { font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }
+
+  .narrative-card {
+    background: white; border-radius: 12px; padding: 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07); border: 1px solid var(--border); margin-bottom: 20px;
+  }
+  .narrative-card h3 { font-size: 14px; font-weight: 700; color: var(--mzc-navy); margin-bottom: 12px; }
+  .narrative-card p { font-size: 13px; line-height: 1.7; margin-bottom: 10px; }
+  .narrative-card ul { margin-left: 20px; font-size: 13px; line-height: 2; }
+
+  .warning-banner {
+    background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: #92400e;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+
+  .init-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .init-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07); border: 1px solid var(--border);
+  }
+  .goal-num { font-size: 11px; font-weight: 700; color: var(--mzc-orange); text-transform: uppercase; letter-spacing: 0.5px; }
+  .goal-title { font-size: 13px; font-weight: 700; margin: 6px 0 4px; line-height: 1.4; }
+  .goal-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+  .goal-value { font-size: 28px; font-weight: 800; line-height: 1; margin-bottom: 2px; }
+  .goal-value.green { color: var(--green); }
+  .goal-value.yellow { color: var(--yellow); }
+  .goal-value.red { color: var(--red); }
+  .goal-value.gray { color: #94a3b8; font-size: 16px; line-height: 1.5; }
+  .ms { display: flex; gap: 6px; font-size: 12px; margin-bottom: 6px; line-height: 1.4; }
+  .ms-icon { flex-shrink: 0; margin-top: 1px; }
+
+  .asks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .ask-card {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.07); border-left: 4px solid var(--mzc-orange);
+  }
+  .ask-type { font-size: 10px; font-weight: 700; color: var(--mzc-orange); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .ask-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .ask-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  .insight-box {
+    background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+    border: 1px solid #bfdbfe; border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 20px; font-size: 13px; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⚡ Strategy &amp; Ops | Marketing QBR</h1>
+    <p>섹션 2: KPI Health · 섹션 4-1: 전략 1 Deep-Dive · Owner: Eumenes Sung (성무경)</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="live-badge">✅ LIVE DATA (SFDC 06/09)</span>
+    <div class="header-right">
+      <div class="period">Q2 2026</div>
+      <div class="deadline">CEO 보고: 2026.07.13 &nbsp;|&nbsp; 제출 Deadline: 06.23</div>
+    </div>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('kpi',this)">📊 KPI Scorecard</button>
+  <button class="tab-btn" onclick="showTab('funnel',this)">🔻 Funnel Metrics</button>
+  <button class="tab-btn" onclick="showTab('trend',this)">📈 Trend 분석</button>
+  <button class="tab-btn" onclick="showTab('initiative',this)">🎯 전략 1 Deep-Dive</button>
+  <button class="tab-btn" onclick="showTab('variance',this)">📝 Variance Narrative</button>
+  <button class="tab-btn" onclick="showTab('asks',this)">🙋 Key Asks</button>
+</div>
+
+<div class="main">
+
+<!-- TAB 1: KPI SCORECARD -->
+<div id="tab-kpi" class="tab-panel active">
+  <div class="warning-banner">
+    ⚠️
+    <div><strong>데이터 인프라 현황:</strong> SFDC Campaign Attribution 태깅율 3.7% (Q2 Won 1,471건 중 55건만 캠페인 연결됨). Revenue ROI / Pipeline ROI는 Attribution 미완성으로 정확한 측정 불가. 이것이 Goal 1.3 (Pipeline Mgmt System 구축)이 H2 최우선 과제인 이유.</div>
+  </div>
+
+  <div class="section-title">Core KPI Scorecard <span class="badge">섹션 2-1</span></div>
+  <div class="kpi-grid">
+    <div class="kpi-card gray">
+      <div class="kpi-status">⚠️</div>
+      <div class="kpi-label">Revenue ROI</div>
+      <div class="kpi-value">측정 불가</div>
+      <div class="kpi-target">목표: <span>4.0x</span> | Baseline: 3.76x</div>
+      <div class="kpi-trend warn">Attribution 태깅율 3.7% → 인프라 구축 우선</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-status">🟢</div>
+      <div class="kpi-label">MQL → SQL 전환율</div>
+      <div class="kpi-value">32.4%</div>
+      <div class="kpi-target">목표: <span>30%</span> | Baseline: 23.92%</div>
+      <div class="kpi-trend up">▲ 목표 초과 +2.4%p | Q1 대비 +10.4%p</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-status">🔴</div>
+      <div class="kpi-label">Lead → MQL 전환율</div>
+      <div class="kpi-value">6.5%</div>
+      <div class="kpi-target">목표: <span>25%</span> | Q2 MQL: 377건</div>
+      <div class="kpi-trend down">▼ 목표 대비 -18.5%p | 상단 퍼널 질적 이슈</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-status">📌</div>
+      <div class="kpi-label">Q2 Won Revenue</div>
+      <div class="kpi-value">₩928억</div>
+      <div class="kpi-target">Q2 Won: <span>1,471건</span> | Pipeline: ₩3,146억</div>
+      <div class="kpi-trend">Win Rate (vs closed): 63.9%</div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>💡 핵심 인사이트:</strong> Q2 MQL→SQL 전환율 32.4%는 목표(30%) 초과 달성. MQL의 질은 개선되고 있음.
+    그러나 Lead→MQL 전환율이 6.5%로 목표(25%) 대비 심각하게 저조 — Q2 총 5,795 Lead 중 377건만 MQL 도달.
+    "많은 리드, 낮은 퀄리티" 패턴이 상단 퍼널의 핵심 문제.
+    Revenue ROI 측정 불가는 시스템 미완성 때문이며, H2 #1 Priority.
+  </div>
+
+  <div class="section-title">Q2 Opportunity Pipeline 현황 <span class="badge">섹션 2-3</span></div>
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">Q2 Opportunity 현황 (Close Date 기준)</div>
+      <div class="chart-subtitle">총 3,884건 | Won 1,471 / Lost 830 / Open 1,583</div>
+      <canvas id="oppStatusChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Q2 월별 Closed Won Revenue</div>
+      <div class="chart-subtitle">4월 ₩517억 → 5월 ₩349억 → 6월 ₩63억 (월초 기준)</div>
+      <canvas id="wonRevenueChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: FUNNEL -->
+<div id="tab-funnel" class="tab-panel">
+  <div class="section-title">Funnel / Process Metrics <span class="badge">섹션 2-2</span></div>
+
+  <div class="chart-card">
+    <div class="chart-title">Q2 Lead → Closed Won 단계별 전환 (2026.04~06.09)</div>
+    <div class="chart-subtitle">실제 SFDC 데이터 기준 | 6월은 월초 수치로 최종값 아님</div>
+    <div id="funnelView" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">MQL→SQL 전환율 월별 추이 (2026)</div>
+      <div class="chart-subtitle">목표 30% | Q2 평균 32.4% — 목표 초과</div>
+      <canvas id="conversionChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">월별 Lead 볼륨 vs MQL 도달 수</div>
+      <div class="chart-subtitle">Lead 볼륨 대비 MQL 전환 격차 시각화</div>
+      <canvas id="leadMqlChart"></canvas>
+    </div>
+  </div>
+
+  <div class="narrative-card">
+    <h3>🔍 Funnel 진단: 상단 퍼널 집중 이슈</h3>
+    <p><strong>무엇이 보이는가:</strong> Q2 총 Lead 5,795건 중 MQL 도달은 377건(6.5%)에 불과. 반면 MQL에 도달한 리드의 SQL 전환율은 32.4%로 목표(30%)를 초과. 즉 "들어오는 리드의 질"이 문제이지, "영업에 넘기는 리드의 처리"는 오히려 좋아지고 있음.</p>
+    <p><strong>3월 대규모 Lead 유입 이슈:</strong> 3월 한 달간 4,372건의 리드가 유입(전월 503건 대비 8.7배)되었으나 MQL 전환은 243건(5.6%). 대규모 이벤트(ICON 등) 후 명함 수집형 리드 대거 유입이 원인으로 추정. 이 패턴이 Q2에도 지속 — 이벤트 Lead 스코어링 강화 필요.</p>
+    <p><strong>6월 수치 유의 사항:</strong> 6월 데이터는 6/9 기준(월 초반)이므로 MQL(46건), SQL(9건)은 최종 수치가 아님. 월말 기준 4~5월 수준으로 증가 예상.</p>
+  </div>
+</div>
+
+<!-- TAB 3: TREND -->
+<div id="tab-trend" class="tab-panel">
+  <div class="section-title">Trend 분석 (Q1 → Q2 2026) <span class="badge">섹션 2-4 지원</span></div>
+
+  <div class="chart-card">
+    <div class="chart-title">월별 Lead / MQL / SQL / Converted 볼륨 추이 (Jan – Jun 9, 2026)</div>
+    <div class="chart-subtitle">3월 Lead 급증(4,372건)은 대형 이벤트 유입 — MQL 전환율 희석의 주요 원인</div>
+    <canvas id="trendChart" style="max-height:300px;"></canvas>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">MQL→SQL 전환율 월별 추이 vs 목표(30%)</div>
+      <canvas id="mqlSqlTrendChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">월별 Won Revenue (억원) — 전체 2026</div>
+      <canvas id="revTrendChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Q1 vs Q2 Funnel 비교 요약</div>
+    <table class="status-table" style="margin-top:12px;">
+      <thead>
+        <tr><th>Funnel 지표</th><th>Q1 실적</th><th>Q2 실적 (6/9)</th><th>변화</th><th>목표</th><th>상태</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>총 Leads</td><td>5,861</td><td>5,795</td><td>▼ -66</td><td>-</td>
+          <td><span class="pill gray">유사</span></td>
+        </tr>
+        <tr>
+          <td>MQL 도달</td><td>663건 (11.3%)</td><td>377건 (6.5%)</td><td>▼ -4.8%p</td><td>25%</td>
+          <td><span class="pill red">미달</span></td>
+        </tr>
+        <tr>
+          <td>SQL 도달 (MQL→SQL)</td><td>146건 (22.0%)</td><td>122건 (32.4%)</td><td>▲ +10.4%p</td><td>30%</td>
+          <td><span class="pill green">초과</span></td>
+        </tr>
+        <tr>
+          <td>Converted</td><td>109건</td><td>68건</td><td>▼ -41건 (월 미완료)</td><td>-</td>
+          <td><span class="pill gray">진행중</span></td>
+        </tr>
+        <tr>
+          <td>Won Revenue (Close 기준)</td><td colspan="4">4월 ₩517억, 5월 ₩349억, 6월 ₩63억(월초) | Q2 합계 ₩929억 / 1,471건</td>
+          <td><span class="pill yellow">주시</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 4: INITIATIVE -->
+<div id="tab-initiative" class="tab-panel">
+  <div class="section-title">전략 1: Data-Driven &amp; Performance-Oriented Marketing <span class="badge">섹션 4-1</span></div>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Owner: Strategy &amp; Ops (성무경) | Goal 1.1, 1.2, 1.3 진척 보고</p>
+
+  <div class="init-grid">
+    <div class="init-card">
+      <div class="goal-num">Goal 1.1</div>
+      <div class="goal-title">Marketing-attributed Revenue ROI 개선</div>
+      <div class="goal-meta">Baseline 3.76x → 목표 4.0x (12월)</div>
+      <div class="goal-value gray">Attribution 인프라 미완성 — 측정 불가</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:4%;background:#94a3b8;"></div></div>
+        <div class="progress-label" style="color:#94a3b8;">~4%</div>
+      </div>
+      <div class="ms"><span class="ms-icon">✅</span><span>SFDC Lead Stage 정의 완료 (MQL/SAL/SQL)</span></div>
+      <div class="ms"><span class="ms-icon">✅</span><span>Opportunity Primary Campaign Source 필드 운영 시작</span></div>
+      <div class="ms"><span class="ms-icon">🔴</span><span>Campaign Attribution 태깅율 3.7% (목표 100%) — 현장 입력 습관화 미흡</span></div>
+      <div class="ms"><span class="ms-icon">🔴</span><span>SFDC↔HubSpot 자동 동기화 미완료 — 수동 입력 오류 지속</span></div>
+      <div class="ms"><span class="ms-icon">🔴</span><span>Revenue ROI 계산 불가 → H2 최우선 해결 과제</span></div>
+    </div>
+
+    <div class="init-card">
+      <div class="goal-num">Goal 1.2</div>
+      <div class="goal-title">MQL→SQL 전환율 30% 달성</div>
+      <div class="goal-meta">Baseline 23.92% → 목표 30% (12월)</div>
+      <div class="goal-value green">32.4%</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div>
+        <div class="progress-label" style="color:var(--green);">108%</div>
+      </div>
+      <div class="ms"><span class="ms-icon">✅</span><span>Q2 MQL→SQL 32.4% — 목표(30%) 초과 달성</span></div>
+      <div class="ms"><span class="ms-icon">✅</span><span>Q1 22.0% → Q2 32.4% (+10.4%p 개선)</span></div>
+      <div class="ms"><span class="ms-icon">✅</span><span>4월 34.3%, 5월 34.0% — 안정적 성과 확인</span></div>
+      <div class="ms"><span class="ms-icon">🟡</span><span>Lead→MQL 6.5% — 상단 퍼널 질적 이슈 상존</span></div>
+      <div class="ms"><span class="ms-icon">🟡</span><span>대형 이벤트 후 Lead 대량 유입 시 비율 희석 리스크</span></div>
+    </div>
+
+    <div class="init-card">
+      <div class="goal-num">Goal 1.3</div>
+      <div class="goal-title">MQL-SAL-SQL 파이프라인 관리 시스템 구축 (50%)</div>
+      <div class="goal-meta">0% → 50% execution 목표 (12월)</div>
+      <div class="goal-value yellow">~40%</div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" style="width:40%;background:var(--yellow);"></div></div>
+        <div class="progress-label" style="color:var(--yellow);">~40%</div>
+      </div>
+      <div class="ms"><span class="ms-icon">✅</span><span>SFDC Lead Stage 필드 정의 및 실운영 시작</span></div>
+      <div class="ms"><span class="ms-icon">✅</span><span>주간 Pipeline Review 루틴 운영 중</span></div>
+      <div class="ms"><span class="ms-icon">🟡</span><span>SAL 핸드오프 SLA 추적 (T+1/T+2) — 부분 운영</span></div>
+      <div class="ms"><span class="ms-icon">🔴</span><span>Attribution 태깅 표준화 미완 — 월간 리뷰 데이터 신뢰도 저하</span></div>
+      <div class="ms"><span class="ms-icon">🔴</span><span>SFDC↔HubSpot 자동화 미완료 — 수동 입력 의존 지속</span></div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">전략 1 Goal 진척 요약 (Q2 2026 기준)</div>
+    <div class="chart-subtitle">Goal 1.1은 Attribution 인프라 없어 사실상 측정 불가 | Goal 1.2는 목표 초과 | Goal 1.3은 시스템 구축 진행 중</div>
+    <canvas id="initiativeChart"></canvas>
+  </div>
+
+  <div class="narrative-card">
+    <h3>🔍 Initiative Deep-Dive: MQL→SQL 성과와 Attribution Gap</h3>
+    <p><strong>설정한 목표:</strong> 연말까지 MQL→SQL 전환율 30% 달성 및 Marketing-attributed Revenue 측정 체계 100% 가시화. 두 목표는 연동 — SQL 전환율 개선이 Revenue ROI 계산의 분자(Attributed Revenue)를 키우는 구조.</p>
+    <p><strong>달성한 것:</strong> Q2 MQL→SQL 32.4%로 목표(30%) 초과. Q1(22.0%) 대비 +10.4%p 개선. 4월 34.3%, 5월 34.0%로 안정화 추세. SFDC Lead Stage 구조화 완료로 파이프라인 모니터링 기반 마련.</p>
+    <p><strong>어디서 막혔는가:</strong> Campaign Attribution 태깅율 3.7% — Q2 Won 1,471건 중 55건만 마케팅 활동과 연결. 나머지 1,416건의 영업 기여에 마케팅이 얼마나 관여했는지 추적 불가. SFDC 입력 습관화 부재 + HubSpot 자동 연동 미완성이 이중 원인. Revenue ROI 계산 불가 = Goal 1.1 사실상 0% 진척.</p>
+    <p><strong>Next Steps (Q3):</strong> ① SFDC Campaign Attribution 필드 입력 의무화 — 이벤트 후 T+2 내 Campaign Member 태깅 SOP 수립 ② SFDC↔HubSpot 자동화 완성 (IT 에스컬레이션 필요) ③ 이벤트 Lead Scoring 강화 (참석 세션·설문 응답 기반) ④ H2 내 Attribution 태깅율 50% 이상 달성 목표</p>
+  </div>
+</div>
+
+<!-- TAB 5: VARIANCE -->
+<div id="tab-variance" class="tab-panel">
+  <div class="section-title">Variance Narrative <span class="badge">섹션 2-4</span></div>
+
+  <div class="chart-card">
+    <div class="chart-title">KPI 목표 달성률 Overview (측정 가능한 지표 기준)</div>
+    <div class="chart-subtitle">Revenue ROI는 Attribution 미완성으로 레이더에서 제외 | Win Rate는 목표 없으나 참고 수치로 포함</div>
+    <canvas id="varianceChart"></canvas>
+  </div>
+
+  <div class="narrative-card">
+    <h3>✅ 무엇이 예상대로 되었는가</h3>
+    <ul>
+      <li><strong>MQL→SQL 전환율 32.4%</strong> — 목표(30%) 초과. Q1 22.0%에서 Q2 32.4%로 +10.4%p 개선. MQL 기준 강화와 Sales-Marketing 정렬 효과 가시화</li>
+      <li><strong>SFDC Lead Stage 구조화 완료</strong> — MQL/SAL/SQL 단계별 추적 가능. Q2 기준 5,795 Lead 중 377 MQL → 250 SAL → 122 SQL → 68 Converted 경로 파악</li>
+      <li><strong>Q2 Win Rate 63.9%</strong> (Closed 기준) — 영업 성사율 안정적 유지. Q2 Won 1,471건, ₩928억 규모</li>
+      <li><strong>주간 Pipeline Review 루틴 정착</strong> — 마케팅-영업 파이프라인 정기 동기화 운영 시작</li>
+    </ul>
+  </div>
+
+  <div class="narrative-card">
+    <h3>⚠️ 무엇이 예상과 달랐는가</h3>
+    <ul>
+      <li><strong>Attribution 태깅율 3.7%</strong> — 가장 큰 의외. Q2 Won 1,471건 중 마케팅 캠페인과 연결된 건이 55건에 불과. Campaign Influence Model 운영 시작했지만 현장 입력 습관화 완전히 미흡. Revenue ROI 측정 자체가 불가능한 상황 발생</li>
+      <li><strong>Lead→MQL 전환율 6.5%</strong> — Q1(11.3%)보다 낮음. 3월 ICON 이후 대규모 이벤트 리드 유입이 비율 희석. '이벤트 Lead 수 늘리기'와 '퀄리티 MQL 만들기'가 상충하는 구조적 긴장 확인</li>
+      <li><strong>SFDC↔HubSpot 자동화 지연</strong> — 원래 Q1 완료 계획. 수동 입력 의존으로 Attribution 데이터 공백 심화. IT 우선순위 문제로 Q2에도 미완료</li>
+    </ul>
+  </div>
+
+  <div class="narrative-card">
+    <h3>🔮 이 추세가 H2/연말까지 지속되는가</h3>
+    <p><strong>MQL→SQL 32.4%</strong>는 현재 구조에서 30~34% 박스권 유지 가능. 단, 하반기 대형 이벤트(AWS re:Invent, AI Festa 등) 이후 이벤트 Lead 대량 유입 시 Lead→MQL 비율 희석 반복 위험.</p>
+    <p><strong>Attribution Gap은 구조적 문제</strong>로 시스템 강제화 없이는 개선되지 않음. H2에 SFDC↔HubSpot 자동화 + Campaign 태깅 SOP가 완성되면 Q3 말~Q4 초에 Revenue ROI 첫 측정 가능 예상. 연말 4.0x 목표는 Attribution 시스템 완성 여부에 전적으로 의존.</p>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <div class="chart-title">Q3 시나리오 예측</div>
+      <table class="status-table" style="margin-top:12px;">
+        <thead><tr><th>KPI</th><th>Q2 실적</th><th>Q3 Best</th><th>Q3 Base</th><th>Q3 Worst</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue ROI</td><td style="color:#94a3b8;">미측정</td><td>3.5x (부분)</td><td>미측정 지속</td><td>미측정 지속</td></tr>
+          <tr><td>MQL→SQL</td><td style="color:var(--green);">32.4%</td><td>35%+</td><td>30~32%</td><td>25% (이벤트 희석)</td></tr>
+          <tr><td>Lead→MQL</td><td style="color:var(--red);">6.5%</td><td>15%</td><td>10%</td><td>5%</td></tr>
+          <tr><td>Attribution 태깅율</td><td style="color:var(--red);">3.7%</td><td>50%+</td><td>25%</td><td>10%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">주요 Risk 레지스터</div>
+      <table class="status-table" style="margin-top:12px;">
+        <thead><tr><th>Risk</th><th>확률</th><th>영향</th><th>대응</th></tr></thead>
+        <tbody>
+          <tr><td>Attribution 구축 H2도 지연</td><td><span class="pill red">High</span></td><td><span class="pill red">High</span></td><td>IT 에스컬 + 전담자</td></tr>
+          <tr><td>이벤트 Lead 희석 반복</td><td><span class="pill red">High</span></td><td><span class="pill yellow">Mid</span></td><td>Lead Scoring 강화</td></tr>
+          <tr><td>Sales-Mkt 기준 불일치</td><td><span class="pill yellow">Mid</span></td><td><span class="pill yellow">Mid</span></td><td>ICP 정례 미팅</td></tr>
+          <tr><td>연말 ROI 측정 불가</td><td><span class="pill yellow">Mid</span></td><td><span class="pill red">High</span></td><td>부분 Attribution 선시행</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 6: KEY ASKS -->
+<div id="tab-asks" class="tab-panel">
+  <div class="section-title">Key Asks — CEO / CMO 지원 요청 <span class="badge">섹션 5-5</span></div>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Strategy &amp; Ops 관점에서 H2 목표 달성을 위해 필요한 의사결정 및 지원 사항 (우선순위 순)</p>
+
+  <div class="asks-grid">
+    <div class="ask-card">
+      <div class="ask-type">🔴 #1 · IT · 시스템</div>
+      <div class="ask-title">SFDC↔HubSpot 자동화 IT 우선순위 에스컬레이션</div>
+      <div class="ask-desc">현재 IT 백로그 하위. Q2 Attribution 3.7%의 직접 원인. 자동화 완성 없이 수동 입력 의존 구조 지속 → Revenue ROI 연말에도 측정 불가. CMO 레벨 요청으로 Q3 내 완료 우선순위 확보 필요. 개발 공수 약 3주 예상.</div>
+    </div>
+    <div class="ask-card">
+      <div class="ask-type">🔴 #2 · 프로세스 표준화</div>
+      <div class="ask-title">Campaign Attribution 태깅 의무화 — 전 팀 SOP 시행</div>
+      <div class="ask-desc">이벤트 종료 후 T+2 내 SFDC Campaign Member 태깅을 모든 팀의 의무 프로세스로 표준화. 현재 태깅율 3.7% → H2 목표 50%+. CMO 지시 형태의 전 팀 적용 필요. Attribution 없이는 마케팅 기여도 증명 자체 불가.</div>
+    </div>
+    <div class="ask-card">
+      <div class="ask-type">🟡 #3 · Sales 협력</div>
+      <div class="ask-title">Sales-Marketing ICP/MQL 기준 월 1회 정례 Calibration 미팅</div>
+      <div class="ask-desc">CRO 주관으로 Sales-Marketing 정기 ICP Calibration 미팅 공식화 요청. Lead→MQL 6.5%의 원인 중 하나가 Sales 팀의 MQL 기준 상이한 해석. 정례화 시 양 팀 정렬 + Lead Scoring 기준 공동 고도화 가능.</div>
+    </div>
+    <div class="ask-card">
+      <div class="ask-type">🟡 #4 · 예산</div>
+      <div class="ask-title">Lead Scoring 고도화 툴 또는 내부 개발 예산 승인 (₩30M 내외)</div>
+      <div class="ask-desc">이벤트 Lead 대량 유입 시 자동으로 참석 세션·설문 응답 기반 스코어 부여 시스템. Lead→MQL 전환율 6.5% → 15%+ 목표. AI 기반 Lead Scoring SaaS 또는 내부 개발. MQL 품질 개선으로 MQL→SQL 32%대 유지 뒷받침.</div>
+    </div>
+  </div>
+
+  <div class="narrative-card">
+    <h3>📋 H2 Action Plan (Strategy &amp; Ops 책임)</h3>
+    <table class="status-table">
+      <thead><tr><th>#</th><th>액션</th><th>Owner</th><th>기한</th><th>기대 효과</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>SFDC↔HubSpot 자동화 완료</td><td>Eumenes + IT</td><td>8/31</td><td>Attribution 태깅율 50%+</td><td><span class="pill red">승인 필요</span></td></tr>
+        <tr><td>2</td><td>Campaign Attribution SOP 전 팀 배포</td><td>Eumenes</td><td>7/15</td><td>이벤트 후 T+2 태깅 습관화</td><td><span class="pill yellow">준비 중</span></td></tr>
+        <tr><td>3</td><td>이벤트 Lead Scoring 강화 (세션/설문 기반)</td><td>Strategy&amp;Ops</td><td>8/15</td><td>Lead→MQL 10%+ 목표</td><td><span class="pill yellow">기획 중</span></td></tr>
+        <tr><td>4</td><td>Sales-Mkt ICP Calibration 정례화</td><td>Eumenes + CRO</td><td>7/31</td><td>MQL 기준 정렬, SQL 거부율 감소</td><td><span class="pill yellow">협의 중</span></td></tr>
+        <tr><td>5</td><td>Revenue ROI 첫 부분 측정 리포트</td><td>Strategy&amp;Ops</td><td>10/31</td><td>Attribution 체계 첫 검증</td><td><span class="pill gray">예정</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  el.classList.add('active');
+  renderCharts();
+}
+
+// ===== REAL SFDC DATA (2026-06-09 기준) =====
+const months   = ['1월','2월','3월','4월','5월','6월*'];
+const leads    = [986,  503,  4372, 1944, 2082, 1769];
+const mql      = [305,  115,  243,  172,  159,  46];
+const sql      = [50,   35,   61,   59,   54,   9];
+const cvt      = [35,   31,   43,   41,   23,   4];
+const mqlSqlR  = [16.4, 30.4, 25.1, 34.3, 34.0, 19.6];
+const wonRev   = [819, 1155, 779, 517, 349, 63];
+
+const C_ORANGE = '#FF6B35';
+const C_NAVY   = '#1A1A2E';
+const C_GREEN  = '#22c55e';
+const C_YELLOW = '#f59e0b';
+const C_RED    = '#ef4444';
+const C_BLUE   = '#3b82f6';
+
+let rendered = false;
+function renderCharts() {
+  if (rendered) return;
+  rendered = true;
+
+  // Opp Status Donut
+  new Chart(document.getElementById('oppStatusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Closed Won (1,471건)', 'Closed Lost (830건)', 'Open (1,583건)'],
+      datasets: [{ data: [1471, 830, 1583], backgroundColor: [C_GREEN, C_RED, '#e2e8f0'], borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Won Revenue Bar (Q2)
+  new Chart(document.getElementById('wonRevenueChart'), {
+    type: 'bar',
+    data: {
+      labels: ['4월', '5월', '6월 (월초)'],
+      datasets: [{ label: 'Won Revenue (억원)', data: [517, 349, 63], backgroundColor: [C_ORANGE, C_ORANGE, '#fbbf9c'], borderRadius: 6 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '₩' + v + '억' } } } }
+  });
+
+  // Funnel View
+  const fw = document.getElementById('funnelView');
+  if (fw) {
+    const stages = [
+      { label: 'Lead 생성', count: 5795, pct: 100, conv: 'Q2 총 유입', color: C_NAVY, icon: '📥' },
+      { label: 'MQL 도달', count: 377, pct: 6.5, conv: '6.5% of Lead (목표 25%) 🔴', color: C_RED, icon: '🔴' },
+      { label: 'SAL 도달', count: 250, pct: 66.3, conv: '66.3% of MQL', color: C_YELLOW, icon: '🟡' },
+      { label: 'SQL 도달', count: 122, pct: 32.4, conv: '32.4% MQL→SQL (목표 30%) 🟢', color: C_GREEN, icon: '🟢' },
+      { label: 'Converted', count: 68, pct: 55.7, conv: '55.7% SQL→Converted', color: C_BLUE, icon: '✅' },
+    ];
+    fw.innerHTML = stages.map(s => `
+      <div class="funnel-row">
+        <div class="funnel-label">${s.label}</div>
+        <div class="funnel-bar-bg">
+          <div class="funnel-bar-fill" style="width:${Math.max(s.pct,2)}%;background:${s.color};">${s.count.toLocaleString()}</div>
+        </div>
+        <div class="funnel-count" style="color:${s.color};">${s.count.toLocaleString()}</div>
+        <div class="funnel-conv">${s.conv}</div>
+        <div class="funnel-icon">${s.icon}</div>
+      </div>`).join('');
+  }
+
+  // MQL→SQL 전환율
+  new Chart(document.getElementById('conversionChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'MQL→SQL (%)', data: mqlSqlR, borderColor: C_ORANGE, backgroundColor: 'rgba(255,107,53,0.1)', fill: true, tension: 0.3, pointRadius: 5 },
+        { label: '목표(30%)', data: Array(6).fill(30), borderColor: C_GREEN, borderDash: [6,3], pointRadius: 0 }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { min: 10, max: 42, ticks: { callback: v => v + '%' } } } }
+  });
+
+  // Lead vs MQL
+  new Chart(document.getElementById('leadMqlChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'Total Lead', data: leads, backgroundColor: 'rgba(15,52,96,0.2)' },
+        { label: 'MQL 도달', data: mql, backgroundColor: C_ORANGE }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Trend Chart
+  new Chart(document.getElementById('trendChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'Leads', data: leads, backgroundColor: 'rgba(15,52,96,0.15)' },
+        { label: 'MQL', data: mql, backgroundColor: C_YELLOW },
+        { label: 'SQL', data: sql, backgroundColor: C_ORANGE },
+        { label: 'Converted', data: cvt, backgroundColor: C_GREEN }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // MQL→SQL Full Trend
+  new Chart(document.getElementById('mqlSqlTrendChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'MQL→SQL (%)', data: mqlSqlR, borderColor: C_ORANGE, backgroundColor: 'rgba(255,107,53,0.1)', fill: true, tension: 0.3, pointRadius: 4 },
+        { label: '목표(30%)', data: Array(6).fill(30), borderColor: C_GREEN, borderDash: [6,3], pointRadius: 0 },
+        { label: 'Baseline(23.92%)', data: Array(6).fill(23.92), borderColor: '#94a3b8', borderDash: [3,3], pointRadius: 0 }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { min: 10, max: 42, ticks: { callback: v => v + '%' } } } }
+  });
+
+  // Revenue Trend
+  new Chart(document.getElementById('revTrendChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Won Revenue (억원)',
+        data: wonRev,
+        backgroundColor: wonRev.map((v,i) => i < 3 ? 'rgba(15,52,96,0.45)' : C_ORANGE),
+        borderRadius: 4
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '₩' + v + '억' } } } }
+  });
+
+  // Initiative Bar
+  new Chart(document.getElementById('initiativeChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Goal 1.1\nRevenue ROI', 'Goal 1.2\nMQL→SQL 30%', 'Goal 1.3\nPipeline System'],
+      datasets: [
+        { label: 'Q1 달성률(%)', data: [2, 73, 25], backgroundColor: 'rgba(15,52,96,0.4)', borderRadius: 4 },
+        { label: 'Q2 달성률(%)', data: [4, 108, 40], backgroundColor: [C_RED, C_GREEN, C_YELLOW], borderRadius: 4 }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { max: 120, ticks: { callback: v => v + '%' } } } }
+  });
+
+  // Variance Radar
+  new Chart(document.getElementById('varianceChart'), {
+    type: 'radar',
+    data: {
+      labels: ['MQL→SQL 전환율', 'Lead→MQL 전환율', 'Pipeline 시스템', 'Attribution 태깅율', 'Win Rate', '파이프라인 규모'],
+      datasets: [
+        { label: '목표(100%)', data: [100,100,100,100,100,100], backgroundColor: 'rgba(34,197,94,0.1)', borderColor: C_GREEN },
+        { label: 'Q2 실적', data: [108, 26, 40, 4, 128, 65], backgroundColor: 'rgba(255,107,53,0.2)', borderColor: C_ORANGE }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { r: { min: 0, max: 130, ticks: { display: false } } } }
+  });
+}
+
+setTimeout(renderCharts, 300);
+</script>
+</body>
+</html>
